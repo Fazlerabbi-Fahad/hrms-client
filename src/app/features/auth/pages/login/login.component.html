@@ -1,0 +1,36 @@
+<div class="space-y-6">
+    <div>
+        <p class="text-sm font-medium uppercase tracking-[0.3em] text-gray-500">Welcome back</p>
+        <h1 class="mt-2 text-2xl font-semibold text-gray-900">Sign in</h1>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <form class="space-y-4" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="username">Username</label>
+            <input id="username" class="input-field" type="text" formControlName="username" placeholder="Enter your username" /> @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+            <p class="text-xs text-red-500 mt-1">Username is required</p>
+            }
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="password">Password</label>
+            <input id="password" class="input-field" type="password" formControlName="password" placeholder="Enter your password" /> @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <p class="text-xs text-red-500 mt-1">Password is required</p>
+            }
+        </div>
+
+        <button class="btn-primary w-full" type="submit" [disabled]="isLoading()">
+          {{ isLoading() ? 'Signing in...' : 'Login' }}
+        </button>
+    </form>
+
+    <p class="text-sm text-gray-500">
+        Return to <a class="text-blue-600 hover:underline" routerLink="/dashboard">dashboard</a>
+    </p>
+</div>

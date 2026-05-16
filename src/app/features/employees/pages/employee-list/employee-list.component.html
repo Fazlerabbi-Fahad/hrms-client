@@ -1,0 +1,65 @@
+<section class="card space-y-5">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+            <h2 class="page-header">Employees</h2>
+            <p class="page-subheader mb-0">Manage your employee records</p>
+        </div>
+
+        <a class="btn-primary" routerLink="/employees/new">Create Employee</a>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    } @if (isLoading()) {
+    <p class="text-sm text-gray-500">Loading employees...</p>
+    } @else {
+    <div class="overflow-x-auto rounded-xl border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
+            <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-600">
+                <tr>
+                    <th class="px-4 py-3">SL</th>
+                    <th class="px-4 py-3">Name</th>
+                    <th class="px-4 py-3">Email</th>
+                    <th class="px-4 py-3">Phone</th>
+                    <th class="px-4 py-3">Joining Date</th>
+                    <th class="px-4 py-3">Department</th>
+                    <th class="px-4 py-3">Designation</th>
+                    <th class="px-4 py-3">Employment Status</th>
+                    <th class="px-4 py-3">Action</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-100 bg-white">
+                @for (employee of employees(); track employee.id; let i = $index) {
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ i + 1 }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ employee.name }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ employee.email }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ employee.phoneNumber }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ employee.joiningDate | date: 'dd MMM yyyy' }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ employee.departmentName }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ employee.designationName }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">
+                        <span class="badge badge-primary">{{ employee.employmentStatusName }}</span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-2">
+                            <a class="btn-secondary" [routerLink]="['/employees', employee.id]">View</a>
+                            <a class="btn-secondary" [routerLink]="['/employees', employee.id, 'edit']">Edit</a>
+                        </div>
+                    </td>
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500">
+                        No employee data found.
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</section>
