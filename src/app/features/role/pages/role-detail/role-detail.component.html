@@ -1,0 +1,44 @@
+<section class="card space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+            <h2 class="page-header">Role Details</h2>
+            <p class="page-subheader mb-0">Viewing role record</p>
+        </div>
+        <div class="flex gap-2">
+            <a class="btn-secondary" routerLink="/roles">Back</a>
+            <a class="btn-primary" [routerLink]="['/roles', id(), 'edit']">Edit</a>
+        </div>
+    </div>
+
+    <!-- Error -->
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <!-- Loading -->
+    @if (isLoading()) {
+    <p class="text-sm text-gray-500">Loading role details...</p>
+    }
+
+    <!-- Content -->
+    @if (role(); as r) {
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+
+        <div class="space-y-1">
+            <p class="text-xs font-medium uppercase tracking-wide text-gray-400">ID</p>
+            <p class="text-sm font-semibold text-gray-900">{{ r.id }}</p>
+        </div>
+
+        <div class="space-y-1">
+            <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Role Name</p>
+            <p class="text-sm font-semibold text-gray-900">{{ r.roleName }}</p>
+        </div>
+
+    </div>
+    }
+
+</section>

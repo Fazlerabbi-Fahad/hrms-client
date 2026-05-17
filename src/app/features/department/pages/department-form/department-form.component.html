@@ -1,0 +1,28 @@
+<section class="card space-y-5">
+    <div>
+        <h2 class="page-header">{{ isEditMode() ? 'Edit Department' : 'Create Department' }}</h2>
+        <p class="page-subheader mb-0">{{ isEditMode() ? 'Update the department details.' : 'Fill in department details and save.' }}</p>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <form class="grid grid-cols-1 gap-4 max-w-md" [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="departmentName">Department Name *</label>
+            <input id="departmentName" class="input-field" type="text" formControlName="departmentName" placeholder="Enter department name" /> @if (departmentForm.controls.departmentName.invalid && departmentForm.controls.departmentName.touched) {
+            <p class="text-xs text-red-600">Department name is required.</p>
+            }
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+            <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
+                {{ isSubmitting() ? 'Saving...' : isEditMode() ? 'Update Department' : 'Create Department' }}
+            </button>
+            <a class="btn-secondary" routerLink="/departments">Cancel</a>
+        </div>
+    </form>
+</section>

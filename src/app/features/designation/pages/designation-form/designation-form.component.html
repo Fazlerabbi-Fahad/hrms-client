@@ -1,0 +1,29 @@
+<section class="card space-y-5">
+    <div>
+        <h2 class="page-header">{{ isEditMode() ? 'Edit Designation' : 'Create Designation' }}</h2>
+        <p class="page-subheader mb-0">{{ isEditMode() ? 'Update the designation details.' : 'Fill in designation details and save.' }}</p>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <form class="grid grid-cols-1 gap-4 max-w-md" [formGroup]="designationForm" (ngSubmit)="onSubmit()">
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="designationName">Designation Name *</label>
+            <input id="designationName" class="input-field" type="text" formControlName="designationName" placeholder="Enter designation name" /> @if (designationForm.controls.designationName.invalid && designationForm.controls.designationName.touched)
+            {
+            <p class="text-xs text-red-600">Designation name is required.</p>
+            }
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+            <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
+                {{ isSubmitting() ? 'Saving...' : isEditMode() ? 'Update Designation' : 'Create Designation' }}
+            </button>
+            <a class="btn-secondary" routerLink="/designations">Cancel</a>
+        </div>
+    </form>
+</section>

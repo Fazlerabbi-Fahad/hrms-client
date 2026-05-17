@@ -1,0 +1,28 @@
+<section class="card space-y-5">
+    <div>
+        <h2 class="page-header">{{ isEditMode() ? 'Edit Role' : 'Create Role' }}</h2>
+        <p class="page-subheader mb-0">{{ isEditMode() ? 'Update the role details.' : 'Fill in role details and save.' }}</p>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <form class="grid grid-cols-1 gap-4 max-w-md" [formGroup]="roleForm" (ngSubmit)="onSubmit()">
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="roleName">Role Name *</label>
+            <input id="roleName" class="input-field" type="text" formControlName="roleName" placeholder="Enter role name" /> @if (roleForm.controls.roleName.invalid && roleForm.controls.roleName.touched) {
+            <p class="text-xs text-red-600">Role name is required.</p>
+            }
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+            <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
+                {{ isSubmitting() ? 'Saving...' : isEditMode() ? 'Update Role' : 'Create Role' }}
+            </button>
+            <a class="btn-secondary" routerLink="/roles">Cancel</a>
+        </div>
+    </form>
+</section>

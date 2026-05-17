@@ -1,0 +1,80 @@
+<section class="card space-y-5">
+    <div>
+        <h2 class="page-header">{{ isEditMode() ? 'Edit Employee' : 'Create Employee' }}</h2>
+        <p class="page-subheader mb-0" *ngIf="!isEditMode()">Fill in employee details and save.</p>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    } @if (successMessage()) {
+    <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        {{ successMessage() }}
+    </div>
+    }
+
+    <form class="grid grid-cols-1 gap-4 md:grid-cols-2" [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+        <div class="space-y-2 md:col-span-2">
+            <label class="text-sm font-medium text-gray-700" for="name">Name *</label>
+            <input id="name" class="input-field" type="text" formControlName="name" placeholder="Enter employee name" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="email">Email</label>
+            <input id="email" class="input-field" type="email" formControlName="email" placeholder="Enter email" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="phoneNumber">Phone Number *</label>
+            <input id="phoneNumber" class="input-field" type="text" formControlName="phoneNumber" placeholder="Enter phone number" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="dateOfBirth">Date of Birth *</label>
+            <input id="dateOfBirth" class="input-field" type="date" formControlName="dateOfBirth" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="joiningDate">Joining Date *</label>
+            <input id="joiningDate" class="input-field" type="date" formControlName="joiningDate" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="departmentId">Department *</label>
+            <select id="departmentId" class="input-field" formControlName="departmentId">
+            <option value="">Select department</option>
+            @for (item of departmentOptions(); track item.id) {
+              <option [value]="item.id">{{ item.departmentName }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="designationId">Designation *</label>
+            <select id="designationId" class="input-field" formControlName="designationId">
+            <option value="">Select designation</option>
+            @for (item of designationOptions(); track item.id) {
+              <option [value]="item.id">{{ item.designationName }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="space-y-2 md:col-span-2">
+            <label class="text-sm font-medium text-gray-700" for="employmentStatusId">Employment Status *</label>
+            <select id="employmentStatusId" class="input-field" formControlName="employmentStatusId">
+            <option value="">Select status</option>
+            @for (item of employmentStatusOptions(); track item.id) {
+              <option [value]="item.id">{{ item.statusName }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="md:col-span-2 flex flex-wrap gap-3 pt-2">
+            <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
+            {{ isSubmitting() ? 'Saving...' : isEditMode() ? 'Update Employee' : 'Create Employee' }}
+          </button>
+            <a class="btn-secondary" routerLink="/employees">Cancel</a>
+        </div>
+    </form>
+</section>

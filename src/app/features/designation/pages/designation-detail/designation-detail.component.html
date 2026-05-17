@@ -1,0 +1,44 @@
+<section class="card space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+            <h2 class="page-header">Designation Details</h2>
+            <p class="page-subheader mb-0">Viewing designation record</p>
+        </div>
+        <div class="flex gap-2">
+            <a class="btn-secondary" routerLink="/designations">Back</a>
+            <a class="btn-primary" [routerLink]="['/designations', id(), 'edit']">Edit</a>
+        </div>
+    </div>
+
+    <!-- Error -->
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <!-- Loading -->
+    @if (isLoading()) {
+    <p class="text-sm text-gray-500">Loading designation details...</p>
+    }
+
+    <!-- Content -->
+    @if (designation(); as d) {
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+
+        <div class="space-y-1">
+            <p class="text-xs font-medium uppercase tracking-wide text-gray-400">ID</p>
+            <p class="text-sm font-semibold text-gray-900">{{ d.id }}</p>
+        </div>
+
+        <div class="space-y-1">
+            <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Designation Name</p>
+            <p class="text-sm font-semibold text-gray-900">{{ d.designationName }}</p>
+        </div>
+
+    </div>
+    }
+
+</section>

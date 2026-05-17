@@ -1,0 +1,28 @@
+<section class="card space-y-5">
+    <div>
+        <h2 class="page-header">{{ isEditMode() ? 'Edit Employment Status' : 'Create Employment Status' }}</h2>
+        <p class="page-subheader mb-0">{{ isEditMode() ? 'Update the employment status details.' : 'Fill in employment status details and save.' }}</p>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <form class="grid grid-cols-1 gap-4 max-w-md" [formGroup]="employmentStatusForm" (ngSubmit)="onSubmit()">
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="statusName">Status Name *</label>
+            <input id="statusName" class="input-field" type="text" formControlName="statusName" placeholder="Enter status name" /> @if (employmentStatusForm.controls.statusName.invalid && employmentStatusForm.controls.statusName.touched) {
+            <p class="text-xs text-red-600">Status name is required.</p>
+            }
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+            <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
+                {{ isSubmitting() ? 'Saving...' : isEditMode() ? 'Update Employment Status' : 'Create Employment Status' }}
+            </button>
+            <a class="btn-secondary" routerLink="/employment-statuses">Cancel</a>
+        </div>
+    </form>
+</section>

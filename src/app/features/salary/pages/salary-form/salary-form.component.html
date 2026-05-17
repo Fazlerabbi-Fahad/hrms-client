@@ -1,0 +1,56 @@
+<section class="card space-y-5">
+    <div>
+        <h2 class="page-header">{{ isEditMode() ? 'Edit Salary' : 'Create Salary' }}</h2>
+        <p class="page-subheader mb-0">{{ isEditMode() ? 'Update the salary details.' : 'Fill in salary details and save.' }}</p>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <form class="grid grid-cols-1 gap-4 md:grid-cols-2" [formGroup]="salaryForm" (ngSubmit)="onSubmit()">
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="employeeId">Employee ID *</label>
+            <input id="employeeId" class="input-field" type="text" formControlName="employeeId" placeholder="Enter employee ID" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="basicSalary">Basic Salary *</label>
+            <input id="basicSalary" class="input-field" type="number" formControlName="basicSalary" placeholder="Enter basic salary" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="houseAllowance">House Allowance *</label>
+            <input id="houseAllowance" class="input-field" type="number" formControlName="houseAllowance" placeholder="Enter house allowance" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="medicalAllowance">Medical Allowance *</label>
+            <input id="medicalAllowance" class="input-field" type="number" formControlName="medicalAllowance" placeholder="Enter medical allowance" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="transportAllowance">Transport Allowance</label>
+            <input id="transportAllowance" class="input-field" type="number" formControlName="transportAllowance" placeholder="Enter transport allowance" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="effectiveFrom">Effective From</label>
+            <input id="effectiveFrom" class="input-field" type="date" formControlName="effectiveFrom" />
+        </div>
+
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="effectiveTo">Effective To *</label>
+            <input id="effectiveTo" class="input-field" type="date" formControlName="effectiveTo" />
+        </div>
+
+        <div class="md:col-span-2 flex flex-wrap gap-3 pt-2">
+            <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
+                {{ isSubmitting() ? 'Saving...' : isEditMode() ? 'Update Salary' : 'Create Salary' }}
+            </button>
+            <a class="btn-secondary" routerLink="/salaries">Cancel</a>
+        </div>
+    </form>
+</section>

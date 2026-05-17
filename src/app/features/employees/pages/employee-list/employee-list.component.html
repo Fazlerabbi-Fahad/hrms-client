@@ -16,6 +16,9 @@
     <p class="text-sm text-gray-500">Loading employees...</p>
     } @else {
     <div class="overflow-x-auto rounded-xl border border-gray-200">
+        <div class="flex items-center justify-end p-4">
+            <input class="input-field max-w-sm" type="text" placeholder="Search by name, email, department..." [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+        </div>
         <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
             <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-600">
                 <tr>
@@ -32,7 +35,7 @@
             </thead>
 
             <tbody class="divide-y divide-gray-100 bg-white">
-                @for (employee of employees(); track employee.id; let i = $index) {
+                @for (employee of filteredEmployees(); track employee.id; let i = $index) {
                 <tr class="hover:bg-gray-50">
                     <td class="px-4 py-3 font-medium text-gray-900">{{ i + 1 }}</td>
                     <td class="px-4 py-3 font-medium text-gray-900">{{ employee.name }}</td>
@@ -48,6 +51,9 @@
                         <div class="flex flex-wrap gap-2">
                             <a class="btn-secondary" [routerLink]="['/employees', employee.id]">View</a>
                             <a class="btn-secondary" [routerLink]="['/employees', employee.id, 'edit']">Edit</a>
+                            <button class="btn-secondary text-red-600 border-red-200 hover:bg-red-50" (click)="deleteEmployee(employee.id)">
+                              Delete
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -60,6 +66,8 @@
                 }
             </tbody>
         </table>
+        <app-paginator [currentPage]="currentPage()" [totalPages]="totalPages()" [totalCount]="totalCount()" (pageChange)="goToPage($event)">
+        </app-paginator>
     </div>
     }
 </section>

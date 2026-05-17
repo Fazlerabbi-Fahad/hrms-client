@@ -1,0 +1,55 @@
+<section class="card space-y-5">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+            <h2 class="page-header">Roles</h2>
+            <p class="page-subheader mb-0">Manage your role records</p>
+        </div>
+        <a class="btn-primary" routerLink="/roles/new">Create Role</a>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    } @if (isLoading()) {
+    <p class="text-sm text-gray-500">Loading roles...</p>
+    } @else {
+    <div class="overflow-x-auto rounded-xl border border-gray-200">
+        <div class="flex items-center justify-end p-4">
+            <input class="input-field max-w-sm" type="text" placeholder="Search by role name..." [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+        </div>
+        <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
+            <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-600">
+                <tr>
+                    <th class="px-4 py-3">SL</th>
+                    <th class="px-4 py-3">Role Name</th>
+                    <th class="px-4 py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 bg-white">
+                @for (role of filteredRoles(); track role.id; let i = $index) {
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ i + 1 }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ role.roleName }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-2">
+                            <a class="btn-secondary" [routerLink]="['/roles', role.id]">View</a>
+                            <a class="btn-secondary" [routerLink]="['/roles', role.id, 'edit']">Edit</a>
+                            <button class="btn-secondary text-red-600 border-red-200 hover:bg-red-50" (click)="deleteRole(role.id)">
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="3" class="px-4 py-6 text-center text-sm text-gray-500">
+                        No role data found.
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</section>

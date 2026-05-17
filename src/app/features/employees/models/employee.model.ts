@@ -1,5 +1,5 @@
 export interface Employee {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phoneNumber: string;
@@ -7,6 +7,18 @@ export interface Employee {
   departmentName: string;
   designationName: string;
   employmentStatusName: string;
+}
+
+export interface EmployeeRequestModel {
+  id?: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  joiningDate: string;
+  departmentId: number;
+  designationId: number;
+  employmentStatusId: number;
+  userId: number;
 }
 
 export interface EmployeeApiResponse {

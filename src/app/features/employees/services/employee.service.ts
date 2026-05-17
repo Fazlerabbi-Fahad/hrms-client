@@ -13,11 +13,22 @@ import { EmployeeRequestModel } from '../../../core/models/employee.model';
 export class EmployeeService {
   private readonly http = inject(HttpClient);
 
-  getEmployees(): Observable<ApiResponse<PaginatedData<Employee[]>>> {
+  getEmployees(): Observable<ApiResponse<PaginatedData<Employee>>> {
     return this.http.get<ApiResponse<PaginatedData<Employee[]>>>(`${environment.apiUrl}/Employee`);
+  }
+  getEmployeeById(id: number): Observable<ApiResponse<Employee>> {
+    return this.http.get<ApiResponse<Employee>>(`${environment.apiUrl}/Employee/${id}`);
   }
 
   createEmployee(payload: EmployeeRequestModel): Observable<ApiResponse<unknown>> {
     return this.http.post<ApiResponse<unknown>>(`${environment.apiUrl}/Employee`, payload);
+  }
+
+  updateEmployee(id: number, payload: EmployeeRequestModel): Observable<ApiResponse<unknown>> {
+    return this.http.put<ApiResponse<unknown>>(`${environment.apiUrl}/Employee/${id}`, payload);
+  }
+
+  deleteEmployee(id: number): Observable<ApiResponse<unknown>> {
+    return this.http.delete<ApiResponse<unknown>>(`${environment.apiUrl}/Employee/${id}`);
   }
 }
