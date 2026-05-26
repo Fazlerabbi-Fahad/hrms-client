@@ -5,15 +5,20 @@
     </div>
 
     @if (errorMessage()) {
-    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ errorMessage() }}
     </div>
     }
 
     <form class="grid grid-cols-1 gap-4 md:grid-cols-2" [formGroup]="salaryForm" (ngSubmit)="onSubmit()">
         <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700" for="employeeId">Employee ID *</label>
-            <input id="employeeId" class="input-field" type="text" formControlName="employeeId" placeholder="Enter employee ID" />
+            <label class="text-sm font-medium text-gray-700" for="employeeId">Employee *</label>
+            <select id="employeeId" class="input-field" formControlName="employeeId">
+                <option value="" disabled selected>Select an employee</option>
+                @for (employee of employeeOptions(); track employee.id) {
+                <option [value]="employee.id">{{ employee.name }}</option>
+                }
+            </select>
         </div>
 
         <div class="space-y-2">
@@ -50,7 +55,7 @@
             <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
                 {{ isSubmitting() ? 'Saving...' : isEditMode() ? 'Update Salary' : 'Create Salary' }}
             </button>
-            <a class="btn-secondary" routerLink="/salaries">Cancel</a>
+            <a class="btn-secondary" routerLink="/salary">Cancel</a>
         </div>
     </form>
 </section>

@@ -4,6 +4,7 @@ export interface Employee {
   email: string;
   phoneNumber: string;
   joiningDate: string;
+  dateOfBirth: string;
   departmentName: string;
   designationName: string;
   employmentStatusName: string;
@@ -15,6 +16,7 @@ export interface EmployeeRequestModel {
   email: string;
   phoneNumber: string;
   joiningDate: string;
+  dateOfBirth: string;
   departmentId: number;
   designationId: number;
   employmentStatusId: number;

@@ -1,15 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthUser, LoginRequest, LoginResponse } from '../models/auth.model';
+import { AuthUser, LoginRequest, LoginResponse, RegisterRequest, RegisterRequestResponse } from '../models/auth.model';
 import { map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environments';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-   private readonly STORAGE_KEY = 'hrms_user';
+  private readonly STORAGE_KEY = 'hrms_user';
 
   currentUser = signal<AuthUser | null>(null);
 
@@ -40,6 +41,18 @@ export class AuthService {
       );
   }
 
+  register(request: RegisterRequest): Observable<AuthUser> {
+    return this.http
+      .post<RegisterRequestResponse>(`${environment.apiUrl}/Auth/register`, request)
+      .pipe(
+        map((response) => response.data),
+        tap((user: any) => {
+          this.currentUser.set(user);
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
+        }),
+      );
+  }
+
   logout(): void {
     localStorage.removeItem(this.STORAGE_KEY);
     this.currentUser.set(null);
@@ -50,8 +63,21 @@ export class AuthService {
     return this.currentUser()?.token ?? '';
   }
 
-  getCurrentUser(): AuthUser | null {
-      return this.currentUser();
+  getCurrentUser(): number | null {
+    const token = this.getToken();
+
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const decoded: any = jwtDecode(token);
+      console.log('Decoded JWT:', decoded);
+
+      return Number(decoded.uid);
+    } catch {
+      return null;
+    }
   }
 
   isLoggedIn(): boolean {

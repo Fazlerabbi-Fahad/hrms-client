@@ -11,7 +11,7 @@ export interface Salary {
 
 export interface SalaryRequestModel  {
   id?: number;
-  employeeId: string;
+  employeeId: number;
   basicSalary: number;
   houseAllowance: number;
   medicalAllowance: number;

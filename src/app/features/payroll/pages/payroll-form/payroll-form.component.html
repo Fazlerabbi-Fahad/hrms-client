@@ -1,0 +1,75 @@
+<section class="card space-y-5">
+    <!-- Header -->
+    <div>
+        <h2 class="page-header">Process Payroll</h2>
+        <p class="page-subheader mb-0">Generate monthly payroll for an employee</p>
+    </div>
+
+    <!-- Error Alert -->
+    @if (errorMessage()) {
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <!-- Success Alert -->
+    @if (successMessage()) {
+    <div class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        {{ successMessage() }}
+    </div>
+    }
+
+    <!-- Form -->
+    <form class="grid grid-cols-1 gap-4 md:grid-cols-2" [formGroup]="payrollForm" (ngSubmit)="onSubmit()">
+        <!-- Employee ID - full width -->
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="employeeId">Employee *</label
+      >
+      <select id="employeeId" class="input-field" formControlName="employeeId">
+        <option value="" disabled selected>Select an employee</option>
+        @for (employee of employeeOptions(); track employee.id) {
+          <option [value]="employee.id">{{ employee.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Month -->
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-gray-700" for="month">
+        Month *
+      </label>
+            <select id="month" class="input-field" formControlName="month">
+        @for (m of months; track m.value) {
+          <option [value]="m.value">{{ m.label }}</option>
+        }
+      </select> @if (isInvalid("month")) {
+            <p class="text-xs text-red-600">Month is required</p>
+            }
+        </div>
+
+        <!-- Year -->
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="year">
+        Year *
+      </label>
+            <select id="year" class="input-field" formControlName="year">
+        @for (y of years; track y) {
+          <option [value]="y">{{ y }}</option>
+        }
+      </select> @if (isInvalid("year")) {
+            <p class="text-xs text-red-600">Year is required</p>
+            }
+        </div>
+
+        <div class="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800 md:col-span-2">
+            <strong>Note:</strong> Payroll can only be processed once per employee per month. The system will automatically calculate gross salary, deductions and net salary based on the employee's active salary structure.
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2 md:col-span-2">
+            <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? "Processing..." : "Process Payroll" }}
+      </button>
+            <a class="btn-secondary" routerLink="/payroll"> Cancel </a>
+        </div>
+    </form>
+</section>

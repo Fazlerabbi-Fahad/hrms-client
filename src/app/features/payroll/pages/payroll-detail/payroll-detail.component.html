@@ -1,0 +1,162 @@
+<div class="space-y-5">
+    <div class="flex w-full items-center justify-between gap-3">
+        <h2 class="page-header mb-0">Payroll Details</h2>
+
+        <a class="btn-secondary" routerLink="/payroll"> Cancel </a>
+    </div>
+
+    @if (isLoading()) {
+    <p class="text-sm text-gray-500">Loading...</p>
+    } @if (errorMessage()) {
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <!-- Success -->
+    @if (successMessage()) {
+    <div class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        {{ successMessage() }}
+    </div>
+    } @if (payroll() && !isLoading()) {
+    <!-- Status Banner -->
+    @if (payroll(); as p) {
+    <!-- Now use p instead of payroll()! everywhere -->
+
+    <!-- Status Banner -->
+    <div class="card flex flex-wrap items-center gap-4">
+        <span class="flex-1 text-lg font-semibold text-gray-900">
+          {{ p.monthName }} {{ p.year }} </span
+        ><span [class]="getStatusBadge(p.paymentStatus)">
+          {{ p.paymentStatus }}
+        </span> @if (p.paymentStatus === "Pending") {
+        <button class="btn-primary" (click)="markAsPaid()">
+            Mark as Paid
+          </button> }
+    </div>
+
+    <!-- Employee Information -->
+    <section class="card space-y-4">
+        <h3 class="border-b border-gray-100 pb-3 text-base font-semibold text-gray-900">
+            Employee Information
+        </h3>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="space-y-1">
+                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Emp Code
+                </p>
+                <p class="text-sm font-semibold text-gray-900">{{ p.empCode }}</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Name
+                </p>
+                <p class="text-sm font-semibold text-gray-900">
+                    {{ p.employeeName }}
+                </p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Department
+                </p>
+                <p class="text-sm font-semibold text-gray-900">
+                    {{ p.department }}
+                </p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Pay Period
+                </p>
+                <p class="text-sm font-semibold text-gray-900">
+                    {{ p.monthName }} {{ p.year }}
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Salary Breakdown -->
+    <section class="card space-y-4">
+        <h3 class="border-b border-gray-100 pb-3 text-base font-semibold text-gray-900">
+            Salary Breakdown
+        </h3>
+        <div class="overflow-hidden rounded-md border border-gray-200">
+            <div class="divide-y divide-gray-100">
+                <div class="flex justify-between px-4 py-3 text-sm">
+                    <span class="text-gray-600">Basic Salary</span>
+                    <span class="font-medium text-gray-900">
+                {{ p.basicSalary | number: "1.2-2" }} BDT
+              </span>
+                </div>
+
+                <div class="flex justify-between px-4 py-3 text-sm">
+                    <span class="text-gray-600">House Allowance</span>
+                    <span class="font-medium text-gray-900">
+                {{ p.houseAllowance | number: "1.2-2" }} BDT
+              </span>
+                </div>
+
+                <div class="flex justify-between px-4 py-3 text-sm">
+                    <span class="text-gray-600">Medical Allowance</span>
+                    <span class="font-medium text-gray-900">
+                {{ p.medicalAllowance | number: "1.2-2" }} BDT
+              </span>
+                </div>
+
+                <div class="flex justify-between px-4 py-3 text-sm">
+                    <span class="text-gray-600">Transport Allowance</span>
+                    <span class="font-medium text-gray-900">
+                {{ p.transportAllowance | number: "1.2-2" }} BDT
+              </span>
+                </div>
+
+                <div class="flex justify-between px-4 py-3 text-sm">
+                    <span class="text-gray-600">Bonus</span>
+                    <span class="font-medium text-gray-900">
+                {{ p.bonus | number: "1.2-2" }} BDT
+              </span>
+                </div>
+
+                <!-- Gross -->
+                <div class="flex justify-between bg-gray-50 px-4 py-3 text-sm font-semibold">
+                    <span class="text-gray-700">Gross Salary</span>
+                    <span class="text-gray-900">
+                {{ p.grossSalary | number: "1.2-2" }} BDT
+              </span>
+                </div>
+
+                <!-- Deductions -->
+                <div class="flex justify-between px-4 py-3 text-sm font-semibold">
+                    <span class="text-red-600">Total Deductions</span>
+                    <span class="text-red-600">
+                -{{ p.totalDeductions | number: "1.2-2" }} BDT
+              </span>
+                </div>
+
+                <!-- Net Salary -->
+                <div class="flex justify-between bg-blue-500 px-4 py-4 text-base font-bold text-white">
+                    <span>Net Salary</span>
+                    <span>{{ p.netSalary | number: "1.2-2" }} BDT</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Information -->
+    @if (p.paymentDate) {
+    <section class="card space-y-4">
+        <h3 class="border-b border-gray-100 pb-3 text-base font-semibold text-gray-900">
+            Payment Information
+        </h3>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="space-y-1">
+                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Payment Date
+                </p>
+                <p class="text-sm font-semibold text-gray-900">
+                    {{ p.paymentDate | date: "dd MMMM yyyy, hh:mm a" }}
+                </p>
+            </div>
+        </div>
+    </section>
+    } } }
+</div>

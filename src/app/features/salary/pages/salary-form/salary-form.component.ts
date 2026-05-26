@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { SalaryService } from '../../services/salary.service';
-import { SalaryRequestModel } from '../../models/salary.model';
+import { Salary, SalaryRequestModel } from '../../models/salary.model';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { EmployeeService } from '../../../employees/services/employee.service';
+import { ApiResponse, PaginatedData } from '../../../../core/models/api.model';
+import { Employee } from '../../../employees/models/employee.model';
 
 @Component({
   selector: 'app-salary-form',
@@ -16,36 +19,57 @@ import { AuthService } from '../../../../core/auth/auth.service';
 export class SalaryFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly salaryService = inject(SalaryService);
+  private readonly employeeService = inject(EmployeeService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  readonly id = input<string>();
-  protected readonly isEditMode = computed(() => !!this.id());
+  private readonly route = inject(ActivatedRoute);
+  readonly id = this.route.snapshot.paramMap.get('id');
+  protected readonly isEditMode = computed(() => !!this.id);
+
 
   protected readonly isSubmitting = signal(false);
   protected readonly errorMessage = signal('');
+  protected readonly employeeOptions = signal<Employee[]>([]);
 
   protected readonly salaryForm = this.fb.nonNullable.group({
-    employeeId: ['', [Validators.required]],
-    basicSalary: ['', [Validators.required, Validators.min(0)]],
-    houseAllowance: ['', [Validators.required, Validators.min(0)]],
-    medicalAllowance: ['', [Validators.required, Validators.min(0)]],
-    transportAllowance: ['', [Validators.min(0)]],
+    employeeId: [0, [Validators.required]],
+    basicSalary: [0, [Validators.required, Validators.min(0)]],
+    houseAllowance: [0, [Validators.required, Validators.min(0)]],
+    medicalAllowance: [0, [Validators.required, Validators.min(0)]],
+    transportAllowance: [0, [Validators.min(0)]],
     effectiveFrom: [''],
     effectiveTo: ['', [Validators.required]],
   });
 
   constructor() {
-    if (this.id()) {
+    this.loadEmployees();
+    if (this.id) {
       this.loadSalary();
     }
   }
 
-  private loadSalary(): void {
-    this.salaryService.getSalaryById(Number(this.id())).subscribe({
+  private loadEmployees(): void {
+
+    let params = {
+      pageNumber: 1,
+      pageSize: 100,
+    };
+
+    this.employeeService.getEmployees(params).subscribe({
       next: (response) => {
-        const items = response.data?.items ?? [];
-        const salary = Array.isArray(items) ? items[0] : items;
+        this.employeeOptions.set(response.data?.items ?? []);
+      },
+      error: () => {
+        this.errorMessage.set('Failed to load employees.');
+      },
+    });
+  }
+
+  private loadSalary(): void {
+    this.salaryService.getSalaryById(Number(this.id)).subscribe({
+      next: (response:ApiResponse<Salary>) => {
+        const salary = response.data ?? null;
         if (salary) {
           this.salaryForm.patchValue({
             basicSalary: salary.basicSalary,
@@ -70,7 +94,7 @@ export class SalaryFormComponent {
       return;
     }
 
-    const userId = this.authService.getUserIdFromToken();
+    const userId = Number(this.authService.getCurrentUser());
     if (!userId) {
       this.errorMessage.set('Unable to identify current user. Please login again.');
       return;
@@ -89,20 +113,20 @@ export class SalaryFormComponent {
     };
 
     if (this.isEditMode()) {
-      payload.id = Number(this.id());
+      payload.id = Number(this.id);
     }
 
     this.isSubmitting.set(true);
 
     const request$ = this.isEditMode()
-      ? this.salaryService.updateSalary(payload)
+      ? this.salaryService.updateSalary(Number(this.id), payload)
       : this.salaryService.createSalary(payload);
 
     request$
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: () => {
-          void this.router.navigate(['/salaries']);
+          void this.router.navigate(['/salary']);
         },
         error: () => {
           this.errorMessage.set(

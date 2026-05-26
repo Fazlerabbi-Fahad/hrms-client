@@ -43,7 +43,7 @@ export class RoleListComponent {
   protected deleteRole(id: number): void {
     if (!confirm('Are you sure you want to delete this role?')) return;
 
-    this.roleService.deleteRole({ id }).subscribe({
+    this.roleService.deleteRole(id).subscribe({
       next: () => {
         this.roles.update((list) => list.filter((r) => r.id !== id));
       },

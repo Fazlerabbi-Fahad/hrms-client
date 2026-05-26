@@ -39,16 +39,28 @@ export const routes: Routes = [
             .then(m => m.SALARY_ROUTES)
       },
       {
+        path: 'department',
+        loadChildren: () =>
+          import('../app/features/department/department.routes')
+            .then(m => m.DEPARTMENT_ROUTES)
+      },
+      {
+        path: 'designation',
+        loadChildren: () =>
+          import('../app/features/designation/designation.routes')
+            .then(m => m.DESIGNATION_ROUTES)
+      },
+      {
+        path: 'role',
+        loadChildren: () =>
+          import('../app/features/role/role.routes')
+            .then(m => m.ROLE_ROUTES)
+      },
+      {
         path: 'reports',
         loadChildren: () =>
           import('../app/features/reports/reports.routes')
             .then(m => m.REPORT_ROUTES)
-      },
-      {
-        path: 'settings',
-        loadChildren: () =>
-          import('../app/features/settings/settings.routes')
-            .then(m => m.SETTINGS_ROUTES)
       },
     ]
   },
@@ -63,6 +75,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('../app/features/auth/pages/login/login.component')
             .then(m => m.LoginComponent)
+      },
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('../app/features/auth/pages/register/register.component')
+            .then(m => m.RegisterComponent)
       },
     ]
   },

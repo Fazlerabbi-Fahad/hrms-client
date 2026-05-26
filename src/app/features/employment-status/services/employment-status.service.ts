@@ -16,8 +16,8 @@ export class EmploymentStatusService {
     return this.http.get<ApiResponse<PaginatedData<EmploymentStatus[]>>>(`${environment.apiUrl}/EmploymentStatus`);
   }
 
-  getEmploymentStatusById(id: number): Observable<ApiResponse<PaginatedData<EmploymentStatus[]>>> {
-    return this.http.get<ApiResponse<PaginatedData<EmploymentStatus[]>>>(`${environment.apiUrl}/EmploymentStatus/${id}`);
+  getEmploymentStatusById(id: number): Observable<ApiResponse<EmploymentStatusRequestModel>> {
+    return this.http.get<ApiResponse<EmploymentStatusRequestModel>>(`${environment.apiUrl}/EmploymentStatus/${id}`);
   }
 
   createEmploymentStatus(payload: EmploymentStatusRequestModel): Observable<ApiResponse<unknown>> {

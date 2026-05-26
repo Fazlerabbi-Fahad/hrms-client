@@ -7,17 +7,12 @@ export const DEPARTMENT_ROUTES: Routes = [
       import('./pages/department-list/department-list.component').then(m => m.DepartmentListComponent)
   },
   {
-    path: 'new',
+    path: 'create',
     loadComponent: () =>
       import('./pages/department-form/department-form.component').then(m => m.DepartmentFormComponent)
   },
   {
-    path: ':id',
-    loadComponent: () =>
-      import('./pages/department-detail/department-detail.component').then(m => m.DepartmentDetailComponent)
-  },
-  {
-    path: ':id/edit',
+    path: 'edit/:id',
     loadComponent: () =>
       import('./pages/department-form/department-form.component').then(m => m.DepartmentFormComponent)
   }

@@ -7,17 +7,12 @@ export const DESIGNATION_ROUTES: Routes = [
       import('./pages/designation-list/designation-list.component').then(m => m.DesignationListComponent)
   },
   {
-    path: 'new',
+    path: 'create',
     loadComponent: () =>
       import('./pages/designation-form/designation-form.component').then(m => m.DesignationFormComponent)
   },
   {
-    path: ':id',
-    loadComponent: () =>
-      import('./pages/designation-detail/designation-detail.component').then(m => m.DesignationDetailComponent)
-  },
-  {
-    path: ':id/edit',
+    path: 'edit/:id',
     loadComponent: () =>
       import('./pages/designation-form/designation-form.component').then(m => m.DesignationFormComponent)
   }

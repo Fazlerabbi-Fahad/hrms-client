@@ -8,21 +8,22 @@ export const EMPLOYEE_ROUTES: Routes = [
         .then(m => m.EmployeeListComponent),
   },
   {
+    path: 'create',
+    loadComponent: () =>
+      import('./pages/employee-form/employee-form.component')
+        .then(m => m.EmployeeFormComponent),
+  },
+  {
+    path: 'edit/:id',
+    loadComponent: () =>
+      import('./pages/employee-form/employee-form.component')
+        .then(m => m.EmployeeFormComponent),
+  },
+  {
     path: ':id',
     loadComponent: () =>
       import('./pages/employee-detail/employee-detail.component')
         .then(m => m.EmployeeDetailComponent),
   },
-  {
-    path: 'new',
-    loadComponent: () =>
-      import('./pages/employee-form/employee-form.component')
-        .then(m => m.EmployeeFormComponent),
-  },
-  {
-    path: ':id/edit',
-    loadComponent: () =>
-      import('./pages/employee-form/employee-form.component')
-        .then(m => m.EmployeeFormComponent),
-  }
+
 ];

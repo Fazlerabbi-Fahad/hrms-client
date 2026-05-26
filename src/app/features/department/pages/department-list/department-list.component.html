@@ -4,17 +4,17 @@
             <h2 class="page-header">Departments</h2>
             <p class="page-subheader mb-0">Manage your department records</p>
         </div>
-        <a class="btn-primary" routerLink="/departments/new">Create Department</a>
+        <a class="btn-primary" (click)="createDepartment()">+ Create Department</a>
     </div>
 
     @if (errorMessage()) {
-    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ errorMessage() }}
     </div>
     } @if (isLoading()) {
     <p class="text-sm text-gray-500">Loading departments...</p>
     } @else {
-    <div class="overflow-x-auto rounded-xl border border-gray-200">
+    <div class="overflow-x-auto rounded-md border border-gray-200">
         <div class="flex items-center justify-end p-4">
             <input class="input-field max-w-sm" type="text" placeholder="Search by department name..." [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
         </div>
@@ -27,17 +27,19 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 bg-white">
-                @for (department of filteredDepartments(); track department.id; let i = $index) {
+                @for ( department of filteredDepartments(); track department.id; let i = $index ) {
                 <tr class="hover:bg-gray-50">
                     <td class="px-4 py-3 font-medium text-gray-900">{{ i + 1 }}</td>
-                    <td class="px-4 py-3 font-medium text-gray-900">{{ department.departmentName }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">
+                        {{ department.departmentName }}
+                    </td>
                     <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-2">
-                            <a class="btn-secondary" [routerLink]="['/departments', department.id]">View</a>
-                            <a class="btn-secondary" [routerLink]="['/departments', department.id, 'edit']">Edit</a>
-                            <button class="btn-secondary text-red-600 border-red-200 hover:bg-red-50" (click)="deleteDepartment(department.id)">
-                                Delete
-                            </button>
+                            <a class="btn-secondary" [routerLink]="['/department', 'edit', department.id]"><i class="fa-solid fa-pen"></i
+                  ></a>
+                            <button class="btn-secondary border-red-200 text-red-600 hover:bg-red-50" (click)="deleteDepartment(department.id)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
                         </div>
                     </td>
                 </tr>
@@ -52,4 +54,7 @@
         </table>
     </div>
     }
+
+    <app-paginator [currentPage]="currentPage()" [totalPages]="totalPages()" [totalCount]="totalCount()" (pageChange)="goToPage($event)">
+    </app-paginator>
 </section>

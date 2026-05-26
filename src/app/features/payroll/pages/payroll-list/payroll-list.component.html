@@ -1,0 +1,250 @@
+<section class="card space-y-5">
+
+    <!-- Header -->
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+            <h2 class="page-header">Payroll</h2>
+            <p class="page-subheader mb-0">Manage and process employee payrolls</p>
+        </div>
+        <div class="flex gap-2">
+            <a class="btn-secondary" [routerLink]="['report']">Monthly Report</a>
+            <a class="btn-primary" [routerLink]="['process']">+ Process Payroll</a>
+        </div>
+    </div>
+
+    <!-- Success Alert -->
+    @if (successMessage()) {
+    <div class="rounded-md border border-green-200 bg-green-50
+                px-4 py-3 text-sm text-green-700">
+        {{ successMessage() }}
+    </div>
+    }
+
+    <!-- Error Alert -->
+    @if (errorMessage()) {
+    <div class="rounded-md border border-red-200 bg-red-50
+                px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <!-- Filters -->
+    <div class="flex flex-wrap items-end gap-3">
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-gray-600">Month</label>
+            <select class="input-field w-36" [(ngModel)]="params.month" (change)="onFilter()">
+        <option [ngValue]="undefined">All Months</option>
+        @for (m of months; track m.value) {
+          <option [value]="m.value">{{ m.label }}</option>
+        }
+      </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-gray-600">Year</label>
+            <select class="input-field w-28" [(ngModel)]="params.year" (change)="onFilter()">
+        @for (y of years; track y) {
+          <option [value]="y">{{ y }}</option>
+        }
+      </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-gray-600">Status</label>
+            <select class="input-field w-36" [(ngModel)]="params.paymentStatusId" (change)="onFilter()">
+        <option [value]="" disabled>All Status</option>
+        <option [value]="3">Pending</option>
+        <option [value]="4">Paid</option>
+        <option [value]="5">Cancelled</option>
+      </select>
+        </div>
+
+        <button class="btn-secondary" (click)="onFilter()">
+      🔍 Filter
+    </button>
+    </div>
+
+    <!-- Loading -->
+    @if (isLoading()) {
+    <p class="text-sm text-gray-500">Loading payrolls...</p>
+
+    } @else {
+
+    <!-- Search -->
+    <div class="flex items-center justify-end">
+        <input class="input-field max-w-sm" type="text" placeholder="Search by name, emp code, department..." [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+    </div>
+
+    <!-- ── Desktop Table (md and above) ── -->
+    <div class="hidden md:block overflow-x-auto rounded-md
+                border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
+            <thead class="bg-gray-50 text-xs uppercase tracking-wide
+                      text-gray-600">
+                <tr>
+                    <th class="px-4 py-3">SL</th>
+                    <th class="px-4 py-3">Emp Code</th>
+                    <th class="px-4 py-3">Employee</th>
+                    <th class="px-4 py-3">Department</th>
+                    <th class="px-4 py-3">Period</th>
+                    <th class="px-4 py-3">Gross Salary</th>
+                    <th class="px-4 py-3">Deductions</th>
+                    <th class="px-4 py-3">Net Salary</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Payment Date</th>
+                    <th class="px-4 py-3 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 bg-white">
+                @for ( payroll of filteredPayrolls(); track payroll.id; let i = $index ) {
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 text-gray-500">{{ i + 1 }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">
+                        {{ payroll.empCode }}
+                    </td>
+                    <td class="px-4 py-3 font-medium text-gray-900">
+                        {{ payroll.employeeName }}
+                    </td>
+                    <td class="px-4 py-3 text-gray-700">
+                        {{ payroll.department }}
+                    </td>
+                    <td class="px-4 py-3 text-gray-700">
+                        {{ payroll.monthName }} {{ payroll.year }}
+                    </td>
+                    <td class="px-4 py-3 font-medium text-gray-900">
+                        {{ payroll.grossSalary | number:'1.2-2' }}
+                    </td>
+                    <td class="px-4 py-3 font-medium text-red-600">
+                        -{{ payroll.totalDeductions | number:'1.2-2' }}
+                    </td>
+                    <td class="px-4 py-3 font-semibold text-green-600">
+                        {{ payroll.netSalary | number:'1.2-2' }}
+                    </td>
+                    <td class="px-4 py-3">
+                        <span [class]="getStatusBadge(payroll.paymentStatus)">
+                  {{ payroll.paymentStatus }}
+                </span>
+                    </td>
+                    <td class="px-4 py-3 text-gray-700">
+                        {{ payroll.paymentDate ? (payroll.paymentDate | date:'dd MMM yyyy') : '—' }}
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex items-center justify-center gap-2">
+
+                            <a class="btn-secondary" [routerLink]="[payroll.id]" title="View Details">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            @if (payroll.paymentStatus === 'Pending') {
+                            <button class="btn-secondary border-green-200
+                             text-green-600 hover:bg-green-50" title="Mark as Paid" (click)="markAsPaid(payroll.id)">
+                      <i class="fa-solid fa-circle-check"></i>
+                    </button> }
+                        </div>
+                    </td>
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="11" class="px-4 py-6 text-center text-sm text-gray-500">
+                        No payroll records found.
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        <app-paginator [currentPage]="currentPage()" [totalPages]="totalPages()" [totalCount]="totalCount()" (pageChange)="goToPage($event)">
+        </app-paginator>
+    </div>
+
+    <!-- ── Mobile Cards (below md) ── -->
+    <div class="flex flex-col gap-3 md:hidden">
+        @for ( payroll of filteredPayrolls(); track payroll.id; let i = $index ) {
+        <div class="rounded-md border border-gray-200 bg-white
+                    p-4 space-y-3">
+
+            <!-- Top Row — Name + Status -->
+            <div class="flex items-start justify-between gap-2">
+                <div>
+                    <p class="text-sm font-semibold text-gray-900">
+                        {{ payroll.employeeName }}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        {{ payroll.empCode }} · {{ payroll.department }}
+                    </p>
+                </div>
+                <span [class]="getStatusBadge(payroll.paymentStatus)
+                           + ' shrink-0'">
+              {{ payroll.paymentStatus }}
+            </span>
+            </div>
+
+            <!-- Period -->
+            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                {{ payroll.monthName }} {{ payroll.year }}
+            </p>
+
+            <!-- Salary Figures -->
+            <div class="grid grid-cols-3 gap-2 rounded-md bg-gray-50
+                      border border-gray-100 p-3">
+                <div class="space-y-0.5 text-center">
+                    <p class="text-xs text-gray-400">Gross</p>
+                    <p class="text-sm font-semibold text-gray-900">
+                        {{ payroll.grossSalary | number:'1.2-2' }}
+                    </p>
+                </div>
+                <div class="space-y-0.5 text-center
+                        border-x border-gray-200">
+                    <p class="text-xs text-gray-400">Deductions</p>
+                    <p class="text-sm font-semibold text-red-600">
+                        -{{ payroll.totalDeductions | number:'1.2-2' }}
+                    </p>
+                </div>
+                <div class="space-y-0.5 text-center">
+                    <p class="text-xs text-gray-400">Net</p>
+                    <p class="text-sm font-semibold text-green-600">
+                        {{ payroll.netSalary | number:'1.2-2' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Payment Date -->
+            @if (payroll.paymentDate) {
+            <p class="text-xs text-gray-500">
+                Paid on
+                <span class="font-medium text-gray-700">
+                {{ payroll.paymentDate | date:'dd MMM yyyy' }}
+              </span>
+            </p>
+            }
+
+            <!-- Actions -->
+            <div class="flex gap-2 pt-2 border-t border-gray-100">
+
+                <a class="btn-secondary flex-1 justify-center" [routerLink]="[payroll.id]">
+                    <i class="fa-solid fa-eye"></i>
+                    <span class="ml-1 text-xs">View</span>
+                </a>
+                @if (payroll.paymentStatus === 'Pending') {
+                <button class="btn-secondary flex-1 justify-center
+                       border-green-200 text-green-600 hover:bg-green-50" (click)="markAsPaid(payroll.id)">
+                <i class="fa-solid fa-circle-check"></i>
+                <span class="ml-1 text-xs">Mark Paid</span>
+              </button> }
+            </div>
+
+        </div>
+
+        } @empty {
+        <div class="rounded-md border border-gray-200 bg-white
+                    px-4 py-6 text-center text-sm text-gray-500">
+            No payroll records found.
+        </div>
+        }
+
+        <app-paginator [currentPage]="currentPage()" [totalPages]="totalPages()" [totalCount]="totalCount()" (pageChange)="goToPage($event)">
+        </app-paginator>
+    </div>
+
+    }
+
+</section>

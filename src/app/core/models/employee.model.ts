@@ -12,6 +12,7 @@ export interface EmployeeModel {
 
 
 export interface EmployeeRequestModel {
+  id?: number;
   name: string;
   email: string;
   phoneNumber: string;

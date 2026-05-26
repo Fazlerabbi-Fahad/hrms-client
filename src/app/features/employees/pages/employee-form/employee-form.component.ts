@@ -1,14 +1,15 @@
 import { DepartmentService } from './../../../department/services/department.service';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
-import { EmployeeRequestModel } from '../../../../core/models/employee.model';
+import { EmployeeModel, EmployeeRequestModel } from '../../../../core/models/employee.model';
 import { EmployeeService } from '../../services/employee.service';
 import { DesignationService } from '../../../designation/services/designation.service';
 import { ApiResponse, PaginatedData } from '../../../../core/models/api.model';
+import { EmploymentStatusService } from '../../../employment-status/services/employment-status.service';
 
 
 @Component({
@@ -23,7 +24,7 @@ export class EmployeeFormComponent {
   private readonly departmentService = inject(DepartmentService);
   private readonly designationService = inject(DesignationService);
   private readonly employmentStatusService = inject(EmploymentStatusService);
-  private readonly authService = inject(AuthService);
+  private readonly user = inject(AuthService);
   private readonly router = inject(Router);
 
   protected readonly isSubmitting = signal(false);
@@ -33,9 +34,9 @@ export class EmployeeFormComponent {
   protected readonly departmentOptions = signal<any[]>([]);
   protected readonly designationOptions = signal<any[]>([]);
   protected readonly employmentStatusOptions = signal<any[]>([]);
+  private readonly route = inject(ActivatedRoute);
 
-  readonly id = input<string>();
-  protected readonly isEditMode = computed(() => !!this.id());
+  protected readonly isEditMode = computed(() => !!this.route.snapshot.paramMap.get('id'));
 
   protected readonly employeeForm = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
@@ -53,15 +54,18 @@ export class EmployeeFormComponent {
     this.loadDesignations();
     this.loadEmploymentStatuses();
 
-    if (this.id()) {
-      this.loadEmployee();
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (Number(id)) {
+      this.loadEmployee(Number(id));
     }
   }
 
 
-  private loadEmployee(): void {
-    this.employeeService.getEmployeeById(Number(this.id())).subscribe({
-      next: (response) => {
+  private loadEmployee(id: number): void {
+    this.employeeService.getEmployeeForEditById(id).subscribe({
+      next: (response:ApiResponse<EmployeeRequestModel>) => {
+        console.log('Employee data loaded for edit:', response.data);
         const e = response.data;
         this.employeeForm.patchValue({
           name: e.name,
@@ -87,7 +91,9 @@ export class EmployeeFormComponent {
       return;
     }
 
-    const userId = this.authService.getUserIdFromToken();
+    const userId = this.user.getCurrentUser();
+
+    console.log('Current User ID:', userId);
     if (!userId) {
       this.errorMessage.set('Unable to identify current user. Please login again.');
       return;
@@ -103,13 +109,13 @@ export class EmployeeFormComponent {
       departmentId: Number(formValue.departmentId),
       designationId: Number(formValue.designationId),
       employmentStatusId: Number(formValue.employmentStatusId),
-      userId,
+      userId:userId
     };
 
     this.isSubmitting.set(true);
 
     const request$ = this.isEditMode()
-      ? this.employeeService.updateEmployee(Number(this.id()), payload)
+      ? this.employeeService.updateEmployee(Number(this.route.snapshot.paramMap.get('id')), payload)
       : this.employeeService.createEmployee(payload);
 
     request$
@@ -129,7 +135,11 @@ export class EmployeeFormComponent {
   }
 
  private loadDepartments(): void {
-  this.departmentService.getDepartments().subscribe({
+   let params = {
+    pageNumber: 1,
+    pageSize: 100,
+  };
+  this.departmentService.getDepartments(params).subscribe({
     next: (response) => {
       this.departmentOptions.set(response.data.items);
     },
@@ -140,7 +150,11 @@ export class EmployeeFormComponent {
 }
 
 private loadDesignations(): void {
-  this.designationService.getDesignations().subscribe({
+   let params = {
+    pageNumber: 1,
+    pageSize: 100,
+  };
+  this.designationService.getDesignations(params).subscribe({
     next: (response) => {
       this.designationOptions.set(response.data.items);
     },

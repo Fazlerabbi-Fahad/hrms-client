@@ -17,3 +17,12 @@ export interface DepartmentApiResponse {
   message?: string;
   errors?: string[] | null;
 }
+
+export interface QueryParams {
+  pageNumber?: number;
+  maxPageSize?: number;
+  search?: string;
+  sortBy?: string;
+  sortDirection?: string;
+  pageSize?: number;
+}

@@ -5,7 +5,7 @@
     </div>
 
     @if (errorMessage()) {
-    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ errorMessage() }}
     </div>
     }
@@ -23,7 +23,7 @@
             <button class="btn-primary" type="submit" [disabled]="isSubmitting()">
                 {{ isSubmitting() ? 'Saving...' : isEditMode() ? 'Update Designation' : 'Create Designation' }}
             </button>
-            <a class="btn-secondary" routerLink="/designations">Cancel</a>
+            <a class="btn-secondary" routerLink="/designation">Cancel</a>
         </div>
     </form>
 </section>

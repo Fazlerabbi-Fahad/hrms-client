@@ -7,7 +7,7 @@ export const SALARY_ROUTES: Routes = [
       import('./pages/salary-list/salary-list.component').then(m => m.SalaryListComponent)
   },
   {
-    path: 'new',
+    path: 'create',
     loadComponent: () =>
       import('./pages/salary-form/salary-form.component').then(m => m.SalaryFormComponent)
   },
@@ -17,7 +17,7 @@ export const SALARY_ROUTES: Routes = [
       import('./pages/salary-detail/salary-detail.component').then(m => m.SalaryDetailComponent)
   },
   {
-    path: ':id/edit',
+    path: 'edit/:id',
     loadComponent: () =>
       import('./pages/salary-form/salary-form.component').then(m => m.SalaryFormComponent)
   }

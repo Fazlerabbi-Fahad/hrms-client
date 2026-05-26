@@ -1,0 +1,150 @@
+<div class="space-y-6">
+    <div>
+        <p class="text-sm font-medium uppercase tracking-[0.3em] text-gray-500">
+            Get started
+        </p>
+        <h1 class="mt-2 text-2xl font-semibold text-gray-900">Create account</h1>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+    </div>
+    } @if (successMessage()) {
+    <div class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        {{ successMessage() }}
+    </div>
+    }
+
+    <form class="space-y-4" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <!-- Username -->
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="username">Username</label
+      >
+      <input
+        id="username"
+        class="input-field"
+        type="text"
+        formControlName="username"
+        placeholder="Enter your username"
+      />
+      @if (
+        registerForm.get("username")?.invalid &&
+        registerForm.get("username")?.touched
+      ) {
+        <p class="mt-1 text-xs text-red-500">Username is required</p>
+      }
+    </div>
+
+    <!-- Email -->
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-gray-700" for="email">
+        Email <span class="text-gray-400">(optional)</span>
+      </label>
+            <input id="email" class="input-field" type="email" formControlName="email" placeholder="Enter your email" /> @if ( registerForm.get("email")?.invalid && registerForm.get("email")?.touched ) {
+            <p class="mt-1 text-xs text-red-500">
+                Please enter a valid email address
+            </p>
+            }
+        </div>
+
+        <!-- Phone Number -->
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" for="phoneNumber">Phone Number</label
+      >
+      <input
+        id="phoneNumber"
+        class="input-field"
+        type="text"
+        formControlName="phoneNumber"
+        placeholder="Enter your phone number"
+      />
+      @if (
+        registerForm.get("phoneNumber")?.invalid &&
+        registerForm.get("phoneNumber")?.touched
+      ) {
+        <p class="mt-1 text-xs text-red-500">Phone number is required</p>
+      }
+    </div>
+
+    <!-- Password -->
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-gray-700" for="password"
+        >Password</label
+      >
+      <input
+        id="password"
+        class="input-field"
+        type="password"
+        formControlName="password"
+        placeholder="Enter your password"
+      />
+      @if (
+        registerForm.get("password")?.invalid &&
+        registerForm.get("password")?.touched
+      ) {
+        <p class="mt-1 text-xs text-red-500">Password is required</p>
+      }
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-gray-700" for="confirmPassword"
+        >Confirm Password</label
+      >
+      <input
+        id="confirmPassword"
+        class="input-field"
+        type="password"
+        formControlName="confirmPassword"
+        placeholder="Re-enter your password"
+      />
+      @if (
+        registerForm.get("confirmPassword")?.invalid &&
+        registerForm.get("confirmPassword")?.touched
+      ) {
+        <p class="mt-1 text-xs text-red-500">Please confirm your password</p>
+      }
+      @if (
+        registerForm.errors?.["passwordMismatch"] &&
+        registerForm.get("confirmPassword")?.touched
+      ) {
+        <p class="mt-1 text-xs text-red-500">Passwords do not match</p>
+      }
+    </div>
+
+    <!-- Roles -->
+    <div class="space-y-2">
+      <label class="text-sm font-medium text-gray-700">Roles</label> @if (isLoadingRoles()) {
+            <p class="text-xs text-gray-400">Loading roles...</p>
+            } @else if (roles().length === 0) {
+            <p class="text-xs text-red-400">No roles available</p>
+            } @else {
+            <div class="space-y-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                @for (role of roles(); track role.id) {
+                <label class="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                [value]="role.id"
+                [checked]="isRoleSelected(role.id)"
+                (change)="onRoleChange($event, role.id)"
+              />
+              <span class="text-sm text-gray-700">{{ role.roleName }}</span>
+            </label> }
+            </div>
+            } @if ( registerForm.get("roleIds")?.invalid && registerForm.get("roleIds")?.touched ) {
+            <p class="mt-1 text-xs text-red-500">Please select at least one role</p>
+            }
+        </div>
+
+        <button class="btn-primary w-full" type="submit" [disabled]="isLoading() || isLoadingRoles()">
+      {{ isLoading() ? "Creating account..." : "Create Account" }}
+    </button>
+    </form>
+
+    <p class="text-sm text-gray-500">
+        Already have an account?
+        <a class="text-blue-600 hover:underline" routerLink="/login">Sign in</a>
+    </p>
+</div>

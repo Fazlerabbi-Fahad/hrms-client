@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { RoleService } from '../../services/role.service';
-import { RoleRequestModel } from '../../models/role.model';
+import { Role, RoleRequestModel } from '../../models/role.model';
+import { ApiResponse } from '../../../../core/models/api.model';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-role-form',
@@ -15,10 +17,12 @@ import { RoleRequestModel } from '../../models/role.model';
 export class RoleFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly roleService = inject(RoleService);
+  private readonly user = inject(AuthService);
   private readonly router = inject(Router);
+    private readonly route = inject(ActivatedRoute);
+  readonly id = this.route.snapshot.paramMap.get('id');
+  protected readonly isEditMode = computed(() => !!this.id);
 
-  readonly id = input<string>();
-  protected readonly isEditMode = computed(() => !!this.id());
 
   protected readonly isSubmitting = signal(false);
   protected readonly errorMessage = signal('');
@@ -28,16 +32,15 @@ export class RoleFormComponent {
   });
 
   constructor() {
-    if (this.id()) {
+    if (this.id) {
       this.loadRole();
     }
   }
 
   private loadRole(): void {
-    this.roleService.getRoleById(Number(this.id())).subscribe({
-      next: (response) => {
-        const items = response.data?.items ?? [];
-        const role = Array.isArray(items) ? items[0] : items;
+    this.roleService.getRoleById(Number(this.id)).subscribe({
+      next: (response:ApiResponse<Role>) => {
+        const role = response.data ?? null;
         if (role) {
           this.roleForm.patchValue({ roleName: role.roleName });
         }
@@ -58,23 +61,24 @@ export class RoleFormComponent {
     const formValue = this.roleForm.getRawValue();
     const payload: RoleRequestModel = {
       roleName: formValue.roleName,
+      userId:Number(this.user.getCurrentUser()),
     };
 
     if (this.isEditMode()) {
-      payload.id = Number(this.id());
+      payload.id = Number(this.id);
     }
 
     this.isSubmitting.set(true);
 
     const request$ = this.isEditMode()
-      ? this.roleService.updateRole(payload)
+      ? this.roleService.updateRole(Number(this.id), payload)
       : this.roleService.createRole(payload);
 
     request$
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: () => {
-          void this.router.navigate(['/roles']);
+          void this.router.navigate(['/role']);
         },
         error: () => {
           this.errorMessage.set(

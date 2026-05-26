@@ -8,13 +8,13 @@
     </div>
 
     @if (errorMessage()) {
-    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ errorMessage() }}
     </div>
     } @if (isLoading()) {
     <p class="text-sm text-gray-500">Loading employment statuses...</p>
     } @else {
-    <div class="overflow-x-auto rounded-xl border border-gray-200">
+    <div class="overflow-x-auto rounded-md border border-gray-200">
         <div class="flex items-center justify-end p-4">
             <input class="input-field max-w-sm" type="text" placeholder="Search by status name..." [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
         </div>

@@ -12,23 +12,23 @@ import { Role, RoleRequestModel } from '../models/role.model';
 export class RoleService {
   private readonly http = inject(HttpClient);
 
-  getRoles(): Observable<ApiResponse<PaginatedData<Role[]>>> {
-    return this.http.get<ApiResponse<PaginatedData<Role[]>>>(`${environment.apiUrl}/Role`);
+  getRoles(): Observable<ApiResponse<PaginatedData<Role>>> {
+    return this.http.get<ApiResponse<PaginatedData<Role>>>(`${environment.apiUrl}/Role`);
   }
 
-  getRoleById(id: number): Observable<ApiResponse<PaginatedData<Role[]>>> {
-    return this.http.get<ApiResponse<PaginatedData<Role[]>>>(`${environment.apiUrl}/Role/${id}`);
+  getRoleById(id: number): Observable<ApiResponse<Role>> {
+    return this.http.get<ApiResponse<Role>>(`${environment.apiUrl}/Role/${id}`);
   }
 
   createRole(payload: RoleRequestModel): Observable<ApiResponse<unknown>> {
     return this.http.post<ApiResponse<unknown>>(`${environment.apiUrl}/Role`, payload);
   }
 
-  updateRole(payload: RoleRequestModel): Observable<ApiResponse<unknown>> {
-    return this.http.put<ApiResponse<unknown>>(`${environment.apiUrl}/Role`, payload);
+  updateRole(id: number, payload: RoleRequestModel): Observable<ApiResponse<unknown>> {
+    return this.http.put<ApiResponse<unknown>>(`${environment.apiUrl}/Role/${id}`, payload);
   }
 
-  deleteRole(payload: RoleRequestModel): Observable<ApiResponse<unknown>> {
-    return this.http.delete<ApiResponse<unknown>>(`${environment.apiUrl}/Role/${payload.id}`);
+  deleteRole(id: number): Observable<ApiResponse<unknown>> {
+    return this.http.delete<ApiResponse<unknown>>(`${environment.apiUrl}/Role/${id}`);
   }
 }

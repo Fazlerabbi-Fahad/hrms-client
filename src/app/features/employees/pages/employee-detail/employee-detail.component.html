@@ -8,13 +8,12 @@
         </div>
         <div class="flex gap-2">
             <a class="btn-secondary" routerLink="/employees">Back</a>
-            <a class="btn-primary" [routerLink]="['/employees', id(), 'edit']">Edit</a>
         </div>
     </div>
 
     <!-- Error -->
     @if (errorMessage()) {
-    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    <div class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ errorMessage() }}
     </div>
     }
@@ -45,12 +44,12 @@
 
         <div class="space-y-1">
             <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Date of Birth</p>
-            <p class="text-sm text-gray-900">{{ e.dateOfBirth | date: 'dd MMM yyyy' }}</p>
+            <p class="text-sm text-gray-900">{{ e.dateOfBirth }}</p>
         </div>
 
         <div class="space-y-1">
             <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Joining Date</p>
-            <p class="text-sm text-gray-900">{{ e.joiningDate | date: 'dd MMM yyyy' }}</p>
+            <p class="text-sm text-gray-900">{{ e.joiningDate }}</p>
         </div>
 
         <div class="space-y-1">
