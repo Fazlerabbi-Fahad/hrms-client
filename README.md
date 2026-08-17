@@ -1,59 +1,201 @@
-# HrmsFrontend
+# HRMS Client
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.9.
+The Angular frontend for [HRMS API](https://github.com/Fazlerabbi-Fahad/hrms-api) — a human resource management dashboard for employees, payroll, salary, departments, roles and reporting.
 
-## Development server
+**Backend:** [hrms-api](https://github.com/Fazlerabbi-Fahad/hrms-api) — ASP.NET Core Clean Architecture API. This app will not run without it.
 
-To start a local development server, run:
+<!-- SCREENSHOT: replace with a GIF of the employee list → detail → edit flow -->
+<!-- ![HRMS dashboard](docs/demo.gif) -->
 
-```bash
-ng serve
+---
+
+## What it does
+
+An internal-operations dashboard, not a marketing site. The screens are data-dense on purpose: paginated tables, multi-step forms, role-gated actions, and a sidebar whose contents depend on what the signed-in user is allowed to see.
+
+- **Auth** — login and registration, JWT stored and rehydrated on reload, automatic expiry handling
+- **Dashboard** — landing view after sign-in
+- **Employees** — paginated and searchable list, detail view, create/edit forms
+- **Payroll** — records, forms, and a payroll report view
+- **Salary** — salary records with detail and edit
+- **Departments / Designations / Employment statuses** — reference data management
+- **Roles** — role list and assignment
+- **Reports** — reporting views
+- **Theme** — light/dark switching
+
+---
+
+## Architecture
+
+Feature-first, lazily loaded, standalone components. Nothing is registered in a global `NgModule`.
+
+```
+src/app/
+├── core/                      Singletons — loaded once, used everywhere
+│   ├── auth/                  AuthService (signal-based session state)
+│   ├── guards/                authGuard — route protection
+│   ├── interceptors/          authInterceptor — attaches the Bearer token
+│   ├── models/                Shared API + auth + employee types
+│   └── services/              ThemeService
+│
+├── features/                  One folder per domain area, each self-contained
+│   ├── auth/                  pages/login, pages/register
+│   ├── dashboard/
+│   ├── employees/             pages/ · services/ · models/ · employees.routes.ts
+│   ├── payroll/
+│   ├── salary/
+│   ├── department/
+│   ├── designation/
+│   ├── employment-status/
+│   ├── role/
+│   └── reports/
+│
+├── layouts/
+│   ├── auth-layout/           Bare shell for login/register
+│   └── main-layout/           Sidebar + topbar shell for the authenticated app
+│
+└── shared/                    Reusable across features
+    ├── components/            Paginator, NotFound
+    ├── model/
+    └── services/
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+**Why this shape.** Each feature owns its own pages, its own service, its own models, and its own route file. Adding a domain area means adding a folder and one `loadChildren` line — you never touch another feature to ship one. `core/` is the only place allowed to hold app-wide singletons, and `shared/` is the only place allowed to hold cross-feature UI.
 
-## Code scaffolding
+### Routing
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Every feature is code-split at the route level:
 
-```bash
-ng generate component component-name
+```ts
+{
+  path: 'employees',
+  loadChildren: () =>
+    import('./features/employees/employees.routes')
+      .then(m => m.EMPLOYEE_ROUTES)
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Authenticated routes sit under `MainLayoutComponent` behind `authGuard`; login and register sit under `AuthLayoutComponent`. Router config uses `withComponentInputBinding()`, so route params arrive as component inputs instead of manual `ActivatedRoute` subscriptions.
 
-```bash
-ng generate --help
+### Auth flow
+
+`AuthService` holds the session in an Angular **signal**:
+
+```ts
+currentUser = signal<AuthUser | null>(null);
 ```
 
-## Building
+- On login, the user + token are written to the signal and to `localStorage`
+- On app start, the constructor rehydrates from `localStorage` and discards the session if the token has already expired
+- `authInterceptor` clones every outgoing request and attaches `Authorization: Bearer <token>`
+- `authGuard` blocks protected routes when there's no valid session
+- `hasRole()` exposes role checks for conditional UI
 
-To build the project run:
+Signals rather than `BehaviorSubject` — session state is synchronously readable, and templates react without an `async` pipe.
+
+---
+
+## Tech stack
+
+| Concern | Choice |
+|---|---|
+| Framework | Angular 21, standalone components |
+| Language | TypeScript 5.9 |
+| State | Angular signals |
+| Async | RxJS 7.8 |
+| Styling | Tailwind CSS 3.4 + `@tailwindcss/forms` + `@tailwindcss/typography` |
+| Icons | FontAwesome |
+| JWT | `jwt-decode` |
+| Testing | Vitest |
+| Formatting | Prettier + `prettier-plugin-tailwindcss` |
+
+---
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 20+ and npm
+- The [HRMS API](https://github.com/Fazlerabbi-Fahad/hrms-api) running locally
+
+### 1. Clone and install
 
 ```bash
-ng build
+git clone https://github.com/Fazlerabbi-Fahad/hrms-client.git
+cd hrms-client
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 2. Point it at your API
 
-## Running unit tests
+`src/environments/environments.ts`:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+```ts
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:5093/api/v1'
+};
+```
+
+Change the port if your API is listening elsewhere. The backend's CORS policy allows `http://localhost:4200`, so run the dev server on the default port.
+
+### 3. Run
 
 ```bash
-ng test
+npm start
 ```
 
-## Running end-to-end tests
+Open `http://localhost:4200`. The app redirects to `/login` until you have a session.
 
-For end-to-end (e2e) testing, run:
+### Other commands
 
 ```bash
-ng e2e
+npm run build     # production build → dist/
+npm run watch     # rebuild on change (development config)
+npm test          # Vitest
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+## Production build
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Set the real API URL in `src/environments/environments.prod.ts`:
+
+```ts
+export const environment = {
+  production: true,
+  apiUrl: 'https://your-api-host/api/v1'
+};
+```
+
+Then:
+
+```bash
+npm run build
+```
+
+Output lands in `dist/`. Any static host works — Firebase Hosting, Netlify, Vercel, nginx.
+
+---
+
+## Conventions
+
+- **Standalone components everywhere.** No `NgModule` declarations.
+- **Feature services own their HTTP calls.** `EmployeeService` knows about `/Employee`; components don't build URLs.
+- **All responses share one envelope.** The API returns `{ isSuccess, statusCode, data, message, errors }`, typed in `core/models/api.model.ts`, so unwrapping is uniform.
+- **Tailwind utilities in templates**, with Prettier's Tailwind plugin keeping class order consistent.
+- **SCSS** as the component style language, configured through Angular schematics.
+
+---
+
+## Roadmap
+
+- [ ] Global HTTP error interceptor with toast notifications
+- [ ] Refresh-token handling on 401
+- [ ] Deployed demo instance
+
+---
+
+## License
+
+MIT
